@@ -3,13 +3,13 @@
 #include "Graph.h"
 
 
-struct strNode{
-	Type id; //Identificador unico
-	Type v; //Vertice
-	struct strNode *next;
+struct GstrNode{
+	unsigned long id; //Identificador
+	Type data; //Dato contenido
+	List next; //Lista a vértices sucesores
+	Bool print;
 };
-
-typedef struct strNode *Node;
+typedef struct strNode Node;
 
 struct strGraph{
 	int V; //Numero de vertices
@@ -17,10 +17,10 @@ struct strGraph{
 	CMP cmpFunction; //Comparador
 	Clone myClone; //Clonador
 	MyFree myFree;
-	Node *arr; //Arreglo de vErtices
+	Node **arr; //Arreglo de vértices
 };
 
-Graph graph_create(CMP comparator){
+Graph graph_create(CMP comparator,Clone clone, MyFree mfree){
 	Graph g= (Graph)malloc(sizeof(struct strGraph));
 
 	if(g != NULL){
@@ -29,8 +29,8 @@ Graph graph_create(CMP comparator){
 		g->arr[0]->id= (int)0; //No hay id
 		g->arr[0]->next= NULL; //No hay siguiente
 		g->arr[0]->v= (int)0; //No hay vertice
-		g->myClone= NULL; //Clonador
-		g->myFree=NULL; //Destructor
+		g->myClone= clone; //Clonador
+		g->myFree=mfree; //Destructor
 		g->cmpFunction= comparator; //Comparador
 	}
 
