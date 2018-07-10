@@ -7,7 +7,7 @@ struct GstrNode{
 	unsigned long id; //Identificador
 	Type data; //Dato contenido
 	List next; //Lista a vértices sucesores
-	Bool print;
+	bool print;
 };
 typedef struct GstrNode Node;
 
