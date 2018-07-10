@@ -9,7 +9,7 @@ struct GstrNode{
 	List next; //Lista a vértices sucesores
 	Bool print;
 };
-typedef struct strNode Node;
+typedef struct GstrNode Node;
 
 struct strGraph{
 	unsigned int V; //Numero de vertices
