@@ -26,9 +26,7 @@ Graph graph_create(CMP comparator,Clone clone, MyFree mfree){
 	if(g != NULL){
 		g->A= 0; //Numero de aristas
 		g->V=0; //Numero de vertices
-		g->arr[0]->id= (int)0; //No hay id
-		g->arr[0]->next= NULL; //No hay siguiente
-		g->arr[0]->v= (int)0; //No hay vertice
+		g->arr=NULL; //No existe el arreglo
 		g->myClone= clone; //Clonador
 		g->myFree=mfree; //Destructor
 		g->cmpFunction= comparator; //Comparador
