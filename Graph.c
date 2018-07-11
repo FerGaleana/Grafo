@@ -25,7 +25,7 @@ Graph graph_create(CMP comparator,Clone clone, MyFree mfree){
 
 	if(g != NULL){
 		g->A= 0; //Numero de aristas
-		g->V=0; //Numero de vertices
+		g->n_v=0; //Numero de vertices
 		g->arr=NULL; //No existe el arreglo
 		g->myClone= clone; //Clonador
 		g->myFree=mfree; //Destructor
@@ -34,13 +34,16 @@ Graph graph_create(CMP comparator,Clone clone, MyFree mfree){
 
 	return g;
 }
-
 void graph_destroy(Graph g){
- 	for(int i=0; i<g->V; i++)
- 		free(g->arr[i]);
- 	free(g);
+	unsigned int v=g->n_v;
+	for(int i=0; i<v; i++){
+		if(g->arr[i]->next!=NULL)
+			list_destroy(g->arr[i]->next);
+		free(g->arr[i]);
+	}
+	free(g);
 
- } 
+}
 //Agrega un apuntador al arreglo vértices e inicializa los datos
 GNode* add_array(Type data, unsigned int id){
 	GNode* newVertex=(GNode*)malloc(sizeof(struct GstrNode));
