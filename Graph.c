@@ -12,7 +12,7 @@ struct GstrNode{
 typedef struct GstrNode Node;
 
 struct strGraph{
-	unsigned int V; //Numero de vertices
+	unsigned int n_v; //Numero de vertices
 	unsigned int A; //Numero de aristas
 	CMP cmpFunction; //Comparador
 	Clone myClone; //Clonador
