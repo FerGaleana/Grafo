@@ -102,6 +102,25 @@ Bool graph_addVertex(Graph g, Type data){
 
 	return true;
 }
+//Buscar vértice
+GNode* searchVertex(Graph g,Type source){
+	Bool found=false;
+	int i=0;
+	GNode *current=g->arr[i];
+	if(g!=NULL){
+	while(found==false&&i<g->n_v){
+		if(g->cmpFunction(source,current->data)==0)
+			found=true;
+		else{
+			i++;
+			current=g->arr[i];
+		}
+	}
+	}
+	if(found==false)
+		return NULL;
+	return current;
+}
 Bool graph_hasEdge(Graph g,Type source,Type skin){
 	GNode *source_node=searchVertex(g,source);
 	GNode *skin_node=searchVertex(g,skin);
