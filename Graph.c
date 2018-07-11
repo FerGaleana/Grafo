@@ -131,95 +131,99 @@ GNode* searchVertex(Graph g, Type source){
 }
 //Retorna True si el vértice del dato que contiene source, contiene a skin.
 Bool graph_hasEdge(Graph g,Type source,Type skin){
-	GNode *source_node= searchVertex(g,source);
-	GNode *skin_node= searchVertex(g,skin);
-	GNode *current;
-	Bool found= false;
-	int size= list_size(source_node->next);
+	GNode *source_node= searchVertex(g,source); //Apuntador que busca el nodo que contiene a source
+	GNode *skin_node= searchVertex(g,skin); //Apuntador que busca a skin
+	GNode *current; //Apuntador al nodo actual
+	Bool found= false; 
+	int size= list_size(source_node->next); //Devuelve el tamaño de la lista del nodo source
 	int i= 0;
-	if(source_node!=NULL && skin_node!=NULL){
-		while(found==false && i<size){
-			current=(GNode*)list_get(source_node->next,i);
-			if(current==skin_node)
-				found=true;
+	if(source_node!=NULL && skin_node!=NULL){ //Si hay datos en los apuntadores
+		while(found==false && i<size){ //Si aún no se encuentra y la lista aún tiene datos
+			current=(GNode*)list_get(source_node->next,i); //El nodo actual va iterando
+			if(current == skin_node) //Si se encuentra skin
+				found=true; 
 			else
-				i++;
+				i++; //Continúa el ciclo
 		}
-		if(found==true)
-			return true;
+		if(found == true)
+			return true; //Si se encontró
 	}
-	return false;
+	return false; 
 }
+
+//Agrega una arista al grafo
 Bool graph_addEdge(Graph g, Type source, Type skin){
-	GNode *source_node= searchVertex(g,source);
-	GNode *skin_node= searchVertex(g,skin);
+	GNode *source_node= searchVertex(g,source); //Se busca el vértice que cotiene a source
+	GNode *skin_node= searchVertex(g,skin); //Se busca el nodo que contiene a skin
 	//List l;
 	//unsigned int i=g->A;
 	if(source_node!=NULL && skin_node!=NULL && source_node!=skin_node){
-		if(source_node->next == NULL){
-			source_node->next= list_create();
+		if(source_node->next == NULL){ //Si el nodo siguiente está vacío
+			source_node->next= list_create(); //Crea la lista
 		}
+		//Si se encuentra el vértice que tiene a source que incluye en su lista a skin
 		if(graph_hasEdge(g,source,skin) == false){
-			list_add(source_node->next,(struct strNode*)skin_node);
-			g->A++;
+			list_add(source_node->next,(struct strNode*)skin_node); //Se agrega
+			g->A++; //Incrementa el numero de aristas
 			return true;
 		}
 	}
 		return false;
 
 }
-
+//Retorna el número de vértices en el grafo
 unsigned int graph_vertexCount(Graph g){
 	return g->n_v;
 }
-
+//Retorna el número de aristas en el grafo
 unsigned int graph_edgeCount(Graph g){
 	return g->A;
 }
 
+//Retorna cuantos vértices hay en la lista que contiene a source
 unsigned int graph_outDegree(Graph g,Type source){
-	GNode *current= searchVertex(g,source);
+	GNode *current= searchVertex(g,source); //Se asigna un nodo actual
 	int size= 0;
-	if(current != NULL){
-		size=list_size(current->next);
+	if(current != NULL){ //Si no está vacío
+		size= list_size(current->next); //Retorna el tamaño de la lista
 	}
 	return size;
 }
-
+//Imprime el número de aristas
 void edge_print(GNode *edge, Print p, int esp){
-	GNode *temp;
-	for(int j=0;j<list_size(edge->next);j++){
-		temp=(GNode*)list_get(edge->next,j);
-		if(temp->print==false){
-		for(int i=0;i<esp;i++)
-			printf("->");
-		p(temp->data);
-		temp->print=true;
-		if(temp->next!=NULL){
-			esp++;
-			printf("\n");
-			edge_print(temp,p,esp);
-			esp--;
-		}
+	GNode *temp; //Se crea un nodo temporal
+	for(int j=0; j<list_size(edge->next); j++){
+		temp= (GNode*)list_get(edge->next,j); //Apunta al dato almacenado en j
+		if(temp->print == false){
+			for(int i=0; i<esp; i++)
+				printf("->"); 
+			p(temp->data); //Se imprime el dato almacenado en temp
+			temp->print= true; //Si se imprimió
+			if(temp->next != NULL){ //Mientras siga habiendo contenido en next
+				esp++; 
+				printf("\n");
+				edge_print(temp,p,esp);
+				esp--;
+			}
 		printf("\n");
 	}
 	}
 }
 
 Bool graph_print(Graph g, Print p){
-	GNode *edge;
-	GNode *temp;
+	GNode *edge; //Nodo a aristas
+	GNode *temp; //Nodo temporal
 	int i;
-	if(g!=NULL){
-		for(i=0;i<g->n_v;i++){
-			edge= g->arr[i];
-			if(edge->print == false){
-			p(edge->data);
-			if(edge->next != NULL){
-				printf("\n");
-				edge_print(edge,p,1);
+	if(g != NULL){
+		for(i=0; i<g->n_v; i++){ //Va recorriendo según el número de vértices
+			edge= g->arr[i]; //Edge toma la posición del arreglo
+			if(edge->print == false){ //Si no se ha impreso
+				p(edge->data); //Se imprime el dato de edge
+				if(edge->next != NULL){ //Si sigue habiendo vértices
+					printf("\n"); //Salto de línea
+					edge_print(edge,p,1); //Se imprime
 			}
-			printf("\n");
+			printf("\n"); //Salto de línea
 			}
 		}
 		return true;
