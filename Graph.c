@@ -201,3 +201,28 @@ Bool graph_print(Graph g, Print p){
 	}
 	return false;
 }
+
+//PARTE DE LUIS//
+/*
+bool graph_addEdge(Graph g, Type source, Type skin){
+    if(graph_existNode(g,source)==true && true==graph_existNode(g,skin)){
+        Node* temp=(*Node)source;
+        Node* temp2=(*Node)skin;
+        list_add(temp->next,temp2->id);
+        g->V++;
+        return true;
+    }
+    return false;
+}
+
+bool graph_existNode(Graph g, Type vertex){
+    unsigned int counter;
+    CMP comparacion;
+    comparacion = g->cmpFunction;
+    for (counter=0; counter<g->V; counter++){
+        if(1==comparacion(vertex))
+            return true;
+    }
+    return false;
+}
+*/
