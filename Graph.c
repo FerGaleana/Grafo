@@ -102,3 +102,39 @@ Bool graph_addVertex(Graph g, Type data){
 
 	return true;
 }
+Bool graph_hasEdge(Graph g,Type source,Type skin){
+	GNode *source_node=searchVertex(g,source);
+	GNode *skin_node=searchVertex(g,skin);
+	GNode *current;
+	Bool found=false;
+	int size=list_size(source_node->next);
+	int i=0;
+	if(source_node!=NULL&&skin_node!=NULL){
+		while(found==false&&i<size){
+			current=(GNode*)list_get(source_node->next,i);
+			if(current==skin_node)
+				found=true;
+			else
+				i++;
+		}
+		if(found==true)
+			return true;
+	}
+	return false;
+}
+unsigned int graph_vertexCount(Graph g){
+	return g->n_v;
+}
+
+unsigned int graph_edgeCount(Graph g){
+	return g->A;
+}
+
+unsigned int graph_outDegree(Graph g,Type source){
+	GNode *current=searchVertex(g,source);
+	int size=0;
+	if(current!=NULL){
+		size=list_size(current->next);
+	}
+	return size;
+}
