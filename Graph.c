@@ -178,24 +178,41 @@ unsigned int graph_outDegree(Graph g,Type source){
 	return size;
 }
 
+void edge_print(GNode *edge, Print p, int esp){
+	GNode *temp;
+	for(int j=0;j<list_size(edge->next);j++){
+		temp=(GNode*)list_get(edge->next,j);
+		if(temp->print==false){
+		for(int i=0;i<esp;i++)
+			printf("->");
+		p(temp->data);
+		temp->print=true;
+		if(temp->next!=NULL){
+			esp++;
+			printf("\n");
+			edge_print(temp,p,esp);
+			esp--;
+		}
+		printf("\n");
+	}
+	}
+}
 
 Bool graph_print(Graph g, Print p){
-	GNode **edge=g->arr;
+	GNode *edge;
 	GNode *temp;
 	int i;
 	if(g!=NULL){
-		printf("Vértices: ");
 		for(i=0;i<g->n_v;i++){
-			printf("\nID: %u  ",edge[i]->id);
-			p(edge[i]->data);
-			if(edge[i]->next!=NULL){
-				printf("\tAristas: ");
-			for(int j=0;j<list_size(edge[i]->next);j++){
-				temp=(GNode*)list_get(edge[i]->next,j);
-				p(temp->data);
+			edge=g->arr[i];
+			if(edge->print==false){
+			p(edge->data);
+			if(edge->next!=NULL){
+				printf("\n");
+				edge_print(edge,p,1);
 			}
+			printf("\n");
 			}
-
 		}
 		return true;
 	}
