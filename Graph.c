@@ -41,25 +41,12 @@ void graph_destroy(Graph g){
  	free(g);
 
  } 
-//Crea el primer apuntador dentro del arreglo vértices (se manda a llamar si es el primer vértice) e inicializa los datos
-GNode* create_array(Type data){
+//Agrega un apuntador al arreglo vértices e inicializa los datos
+GNode* add_array(Type data, unsigned int id){
 	GNode* newVertex=(GNode*)malloc(sizeof(struct GstrNode));
 	if(newVertex!=NULL){
 		newVertex->data=data;
-		newVertex->id=1;
-		newVertex->next=NULL;
-		newVertex->print=false;
-		return newVertex;
-	}
-	else
-		return NULL;
-}
-//Añade un elemento al arreglo, aumentando el tamaño de este e inicializa los datos
-GNode* add_array(GNode *prev,unsigned int id, Type data){
-	GNode *newVertex=(GNode*)realloc(prev,sizeof(struct GstrNode));
-	if(newVertex!=NULL){
 		newVertex->id=id;
-		newVertex->data=data;
 		newVertex->next=NULL;
 		newVertex->print=false;
 		return newVertex;
@@ -69,19 +56,15 @@ GNode* add_array(GNode *prev,unsigned int id, Type data){
 }
 Bool graph_addVertex(Graph g, Type data){
 	GNode **arreglo=g->arr;
-	unsigned int i=g->V;
+	unsigned int i=g->n_v;
 	Bool found=false;
 	if(i==0&&arreglo==NULL){
 		arreglo=(GNode**)malloc(sizeof(GNode*)); //Crea un nuevo arreglo de apuntadores
-		if(arreglo==NULL)
+		if(arreglo==NULL){
 			return false;
-		arreglo[i]=create_array(g->myClone(data));
-		if(arreglo[i]==NULL)
-			return false;
+		}
+		else
 		g->arr=arreglo;
-		g->arr[i]=arreglo[i];
-		g->V++;
-		return true;
 	}
 	else{
 		int j=0;
@@ -89,16 +72,25 @@ Bool graph_addVertex(Graph g, Type data){
 		while(found==false&&j<i){
 			if(g->cmpFunction(data,(arreglo[j]->data))==0){
 				found=true;
+				return false;
 			}
 			j++;
 		}
-		if(found==false){
-			arreglo[i]=add_array(arreglo[i-1],i,g->myClone(data));
-			if(arreglo[i]==NULL)
-				return false;
-			g->arr[i]=arreglo[i];
-			g->V++;
-		}
 	}
+	if(found==false&&arreglo!=NULL){
+		if(i>0){
+			GNode** arregloTemp=(GNode**)realloc(arreglo,sizeof(GNode*)*(g->n_v+1));
+				if(arregloTemp!=NULL)
+					arreglo=arregloTemp;
+		}
+		arreglo[i]=add_array(g->myClone(data),i+1);
+		if(arreglo[i]==NULL){
+					return false;
+		}
+		g->arr=arreglo;
+		g->n_v++;
+			}
+	else
+		return false;
 	return true;
 }
