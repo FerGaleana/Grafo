@@ -37,66 +37,73 @@ Graph graph_create(CMP comparator,Clone clone, MyFree mfree){
 
 void graph_destroy(Graph g){
 	unsigned int v=g->n_v;
+	
 	for(int i=0; i<v; i++){
-		if(g->arr[i]->next!=NULL)
-			list_destroy(g->arr[i]->next);
-		g->myFree(g->arr[i]->data);
-		free(g->arr[i]);
+		
+		if(g->arr[i]->next != NULL) //Si el next de mi arreglo tiene un dato
+			list_destroy(g->arr[i]->next); //Se destruye 
+		
+		g->myFree(g->arr[i]->data); //Se libera el dato
+		free(g->arr[i]); //Se libera el arreglo
 	}
-	free(g);
+	
+	free(g); //Se libera memoria del grafo
 
 }
 
 //Funciones para arreglo dinámico
 //Crea el primer apuntador dentro del arreglo vértices (se manda a llamar si es el primer vértice) e inicializa los datos
 GNode* add_array(Type data, unsigned int id){
-	GNode* newVertex=(GNode*)malloc(sizeof(struct GstrNode));
-	if(newVertex!=NULL){
-		newVertex->data=data;
-		newVertex->id=id;
-		newVertex->next=NULL;
-		newVertex->print=false;
+	
+	GNode* newVertex= (GNode*)malloc(sizeof(struct GstrNode)); //Se crea memoria para un nuevo vértice
+	if(newVertex != NULL){  //Se inicializan datos
+		newVertex->data= data; 
+		newVertex->id= id;
+		newVertex->next= NULL;
+		newVertex->print= false;
 		return newVertex;
 	}
 	else
 		return NULL;
 }
 
+//Agrega un nuevo vértice de acuerdo al id del nuevo y de los ya existentes
 Bool graph_addVertex(Graph g, Type data){
-	GNode **arreglo=g->arr;
-	unsigned int i=g->n_v;
-	Bool found=false;
-	if(i==0&&arreglo==NULL){
-		arreglo=(GNode**)malloc(sizeof(GNode*)); //Crea un nuevo arreglo de apuntadores
-		if(arreglo==NULL){
+	
+	GNode **arreglo= g->arr; //Se crea un nuevo arreglo
+	unsigned int i= g->n_v; //i se inicializa en el número de vértices del grafo
+	Bool found= false; 
+	if(i==0 && arreglo==NULL){ //Si no se tiene ningun vértice en el arreglo
+		arreglo= (GNode**)malloc(sizeof(GNode*)); //Crea un nuevo arreglo de apuntadores
+		if(arreglo == NULL)
 			return false;
-		}
 		else
-		g->arr=arreglo;
+		g->arr= arreglo; //El arreglo del grafo se iguala al arreglo nuevo
 	}
 	else{
 		int j=0;
 		//Busca que no exista el dato
-		while(found==false&&j<i){
-			if(g->cmpFunction(data,(arreglo[j]->data))==0){
-				found=true;
-				return false;
+		while(found==false && j<i){ //Mientras que el dato no exista y j< número de vértices
+			if(g->cmpFunction(data,(arreglo[j]->data)) == 0){
+				found= true; //Se encontró el dato
+				return false; //No se agregó el nuevo dato porque ya existe
 			}
-			j++;
+			j++; //Se va recorriendo el arreglo en busca de datos
 		}
 	}
-	if(found==false&&arreglo!=NULL){
-		if(i>0){
-			GNode** arregloTemp=(GNode**)realloc(arreglo,sizeof(GNode*)*(g->n_v+1));
-			if(arregloTemp!=NULL)
-				arreglo=arregloTemp;
+	if(found==false && arreglo != NULL){ //Si no existe el dato pero el arreglo ya contiene datos
+		if(i>0){ //Si tiene por lo menos un vértice
+			GNode** arregloTemp= (GNode**)realloc(arreglo,sizeof(GNode*)*(g->n_v+1)); //Se hace un nuevo arreglo temporal
+			if(arregloTemp != NULL) //Si tiene datos
+				arreglo= arregloTemp; //Arreglo se iguala al temporal
 		}
-		arreglo[i]=add_array(g->myClone(data),i+1);
-		if(arreglo[i]==NULL){
-					return false;
-		}
-		g->arr=arreglo;
-		g->n_v++;
+		
+		arreglo[i]= add_array(g->myClone(data),i+1); //Crea el apuntador para el próximo vértice
+		
+		if(arreglo[i] == NULL) 
+			return false; 
+		g->arr= arreglo; //Se copia el arreglo de la función al del grafo
+		g->n_v++; //Incrementa el número de vértices
 	}
 	else
 		return false;
@@ -104,33 +111,34 @@ Bool graph_addVertex(Graph g, Type data){
 }
 
 //Buscar vértice
-GNode* searchVertex(Graph g,Type source){
-	Bool found=false;
-	int i=0;
-	GNode *current=g->arr[i];
-	if(g!=NULL){
-	while(found==false&&i<g->n_v){
-		if(g->cmpFunction(source,current->data)==0)
-			found=true;
-		else{
-			i++;
-			current=g->arr[i];
+GNode* searchVertex(Graph g, Type source){
+	Bool found= false;
+	int i= 0;
+	GNode *current= g->arr[i]; //Current toma los datos del arreglo desde el inicio
+	if(g != NULL){ //Si el grafo recibido contiene datos
+		while(found==false && i<g->n_v){ //Si no se ha encontrado el dato y el contador es menor al número de vértices
+			if(g->cmpFunction(source,current->data) == 0) //Se compara el ingresado con cada uno del arreglo
+				found= true; //Si se encontró 
+			else{
+				i++; //Incrementa el contador 
+				current= g->arr[i]; //Se recorre el nodo current
+			}
 		}
 	}
-	}
-	if(found==false)
+	if(found == false) //Si no se encontró el dato
 		return NULL;
 	return current;
 }
+//Retorna True si el vértice del dato que contiene source, contiene a skin.
 Bool graph_hasEdge(Graph g,Type source,Type skin){
-	GNode *source_node=searchVertex(g,source);
-	GNode *skin_node=searchVertex(g,skin);
+	GNode *source_node= searchVertex(g,source);
+	GNode *skin_node= searchVertex(g,skin);
 	GNode *current;
-	Bool found=false;
-	int size=list_size(source_node->next);
-	int i=0;
-	if(source_node!=NULL&&skin_node!=NULL){
-		while(found==false&&i<size){
+	Bool found= false;
+	int size= list_size(source_node->next);
+	int i= 0;
+	if(source_node!=NULL && skin_node!=NULL){
+		while(found==false && i<size){
 			current=(GNode*)list_get(source_node->next,i);
 			if(current==skin_node)
 				found=true;
@@ -143,15 +151,15 @@ Bool graph_hasEdge(Graph g,Type source,Type skin){
 	return false;
 }
 Bool graph_addEdge(Graph g, Type source, Type skin){
-	GNode *source_node=searchVertex(g,source);
-	GNode *skin_node=searchVertex(g,skin);
+	GNode *source_node= searchVertex(g,source);
+	GNode *skin_node= searchVertex(g,skin);
 	//List l;
 	//unsigned int i=g->A;
-	if(source_node!=NULL&&skin_node!=NULL&&source_node!=skin_node){
-		if(source_node->next==NULL){
-			source_node->next=list_create();
+	if(source_node!=NULL && skin_node!=NULL && source_node!=skin_node){
+		if(source_node->next == NULL){
+			source_node->next= list_create();
 		}
-		if(graph_hasEdge(g,source,skin)==false){
+		if(graph_hasEdge(g,source,skin) == false){
 			list_add(source_node->next,(struct strNode*)skin_node);
 			g->A++;
 			return true;
@@ -170,9 +178,9 @@ unsigned int graph_edgeCount(Graph g){
 }
 
 unsigned int graph_outDegree(Graph g,Type source){
-	GNode *current=searchVertex(g,source);
-	int size=0;
-	if(current!=NULL){
+	GNode *current= searchVertex(g,source);
+	int size= 0;
+	if(current != NULL){
 		size=list_size(current->next);
 	}
 	return size;
@@ -204,10 +212,10 @@ Bool graph_print(Graph g, Print p){
 	int i;
 	if(g!=NULL){
 		for(i=0;i<g->n_v;i++){
-			edge=g->arr[i];
-			if(edge->print==false){
+			edge= g->arr[i];
+			if(edge->print == false){
 			p(edge->data);
-			if(edge->next!=NULL){
+			if(edge->next != NULL){
 				printf("\n");
 				edge_print(edge,p,1);
 			}
@@ -219,27 +227,3 @@ Bool graph_print(Graph g, Print p){
 	return false;
 }
 
-//PARTE DE LUIS//
-/*
-bool graph_addEdge(Graph g, Type source, Type skin){
-    if(graph_existNode(g,source)==true && true==graph_existNode(g,skin)){
-        Node* temp=(*Node)source;
-        Node* temp2=(*Node)skin;
-        list_add(temp->next,temp2->id);
-        g->V++;
-        return true;
-    }
-    return false;
-}
-
-bool graph_existNode(Graph g, Type vertex){
-    unsigned int counter;
-    CMP comparacion;
-    comparacion = g->cmpFunction;
-    for (counter=0; counter<g->V; counter++){
-        if(1==comparacion(vertex))
-            return true;
-    }
-    return false;
-}
-*/
