@@ -40,6 +40,7 @@ void graph_destroy(Graph g){
 	for(int i=0; i<v; i++){
 		if(g->arr[i]->next!=NULL)
 			list_destroy(g->arr[i]->next);
+		g->myFree(g->arr[i]->data);
 		free(g->arr[i]);
 	}
 	free(g);
